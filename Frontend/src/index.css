@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+*{
+  box-sizing: border-box;
+}
+
+html, body{
+  height: 100%;
+  width: 100%;
+}
+
+.message-box{
+  scroll-behavior: smooth;
+}
+.message-box::-webkit-scrollbar{
+  display: none;
+}
