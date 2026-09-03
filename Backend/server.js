@@ -51,37 +51,67 @@ io.use(async (socket, next) => {
     }
 })
 
+// io.on('connection', socket => {
+//     console.log('Socket.io is connected')
+
 io.on('connection', socket => {
-    console.log('Socket.io is connected')
+    console.log('SOCKET CONNECTED:', socket.id)
+    console.log('PROJECT:', socket.project?._id)
+    console.log('USER:', socket.user)
 
     socket.roomId = socket.project._id.toString()
 
     socket.join(socket.roomId)
 
-    socket.on('project-message', async data => {
-        console.log(data)
+    // socket.on('project-message', async data => {
+    //     console.log(data)
 
-        const message=data.message
-        const aiIsPresentInMessage=message.includes('@ai')
+    //     const message=data.message
+    //     const aiIsPresentInMessage=message.includes('@ai')
+    //     socket.broadcast.to(socket.roomId).emit('project-message', data)
+
+    //     if(aiIsPresentInMessage){
+    //         const prompt=message.replace('@ai', " ")
+    //         const result=await generateResult(prompt)
+
+    //         io.to(socket.roomId).emit('project-message', {
+    //             message:result,
+    //             sender:{
+    //                 _id:'ai',
+    //                 email:'AI'
+    //             }
+    //         })
+    //     }
+
+    //     socket.broadcast.to(socket.roomId).emit('project-message', data)
+    // })
+
+    socket.on('project-message', async data => {
+        console.log("MESSAGE RECEIVED:", data)
+
+        const message = data.message
+        const aiIsPresentInMessage = message.includes('@ai')
+
+        // Send message to other collaborators
         socket.broadcast.to(socket.roomId).emit('project-message', data)
 
-        if(aiIsPresentInMessage){
-            const prompt=message.replace('@ai', " ")
-            const result=await generateResult(prompt)
+        if (aiIsPresentInMessage) {
+            const prompt = message.replace('@ai', " ")
+
+            const result = await generateResult(prompt)
 
             io.to(socket.roomId).emit('project-message', {
-                message:result,
-                sender:{
-                    _id:'ai',
-                    email:'AI'
+                message: result,
+                sender: {
+                    _id: 'ai',
+                    email: 'AI'
                 }
             })
         }
-
-        socket.broadcast.to(socket.roomId).emit('project-message', data)
     })
 
     socket.on('event', data => { /* … */ });
+
     socket.on('disconnect', () => {
         console.log('User disconnected')
         socket.leave(socket.roomId)

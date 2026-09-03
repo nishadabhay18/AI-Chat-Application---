@@ -135,7 +135,7 @@
 //             ref={messageBox}
 //             className="message-box p-1 w-full flex-grow gap-1 flex flex-col">
 
-//             {/* <div className="message max-w-56 flex flex-col p-2 bg-slate-400 w-fit rounded-md">
+//             <div className="message max-w-56 flex flex-col p-2 bg-slate-400 w-fit rounded-md">
 //               <small className='opacity-60 text-xs'>
 //                 example@gmil.com
 //               </small>
@@ -155,7 +155,7 @@
 //                 Lorem ipsum dolor sit amet consec Porro, repellendus.
 //               </p>
 
-//             </div> */}
+//             </div>
 
 //             {messages.map((msg, index) => (
 //               <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${user && msg.sender._id === user._id.toString() ? 'ml-auto' : ''}  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}>
@@ -337,7 +337,6 @@ import Markdown from 'markdown-to-jsx'
 //   return <code {...props} ref={ref} />
 // }
 
-
 const Project = () => {
 
   const location = useLocation()
@@ -373,8 +372,6 @@ const Project = () => {
 
       return newSelectedUserId;
     });
-
-
   }
 
 
@@ -395,32 +392,49 @@ const Project = () => {
 
   const send = () => {
 
-    sendMessage('project-message', {
-      message,
-      sender: user
-    })
-    setMessages(prevMessages => [...prevMessages, { sender: user, message }]) // Update messages state
-    setMessage("")
+    if (!message.trim()) return
 
+    if (!user) {
+      console.log("User not available")
+      return
+    }
+
+    const messageData = {
+      message: message.trim(),
+      sender: user
+    }
+
+    console.log("SENDING:", messageData)
+
+    sendMessage('project-message', messageData)
+
+    setMessages(prevMessages => [
+      ...prevMessages,
+      messageData
+    ])
+
+    setMessage("")
   }
 
   function WriteAiMessage(message) {
-    const messageObject = JSON.parse(message)
+    try {
+      const messageObject = JSON.parse(message)
+      return (
+        <div className="overflow-auto bg-slate-950 text-white rounded-sm p-2">
+          <Markdown>
+            {messageObject.text}
+          </Markdown>
+        </div>
+      )
+    } catch (error) {
+      console.error("AI MESSAGE ERROR:", error)
 
-    return (
-      <div
-        className='overflow-auto bg-slate-950 text-white rounded-sm p-2'
-      >
-        <Markdown
-          children={messageObject.text}
-          options={{
-            overrides: {
-              code: SyntaxHighlightedCode,
-            },
-          }}
-        />
-      </div>
-    )
+      return (
+        <p className="text-red-500">
+          Unable to display AI message
+        </p>
+      )
+    }
   }
 
   useEffect(() => {
@@ -469,11 +483,12 @@ const Project = () => {
 
       setUsers(res.data.users)
 
-    }).catch(err => {
-
-      console.log(err)
-
     })
+      .catch(err => {
+
+        console.log(err)
+
+      })
 
   }, [])
 
@@ -513,7 +528,10 @@ const Project = () => {
             ref={messageBox}
             className="message-box p-1 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide">
             {messages.map((msg, index) => (
-              <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${msg.sender._id == user._id.toString() && 'ml-auto'}  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}>
+              <div key={index} className={`${msg.sender._id === 'ai' ? 'max-w-80' : 'max-w-52'} ${user && msg.sender?._id?.toString() === user?._id?.toString()
+                ? 'ml-auto'
+                : ''
+                }  message flex flex-col p-2 bg-slate-50 w-fit rounded-md`}>
                 <small className='opacity-65 text-xs'>{msg.sender.email}</small>
                 <div className='text-sm'>
                   {msg.sender._id === 'ai' ?
@@ -697,36 +715,7 @@ const Project = () => {
           </div>)
         }
 
-
       </section> */}
-
-      <section className="right bg-red-300 flex-grow flex h-full">
-        <div className="explorer h-full max-w-64 bg-slate-200 min-w-52">
-          <div className="file-tree w-full">
-            {
-              Object.key(fileTree).map((file, index) => (
-                <button
-                  onClick={() => setCurrentFile(file)}
-                  className="tree-element cursor-pointer px-2 flex items-center gap-2 bg-slate-300">
-                  <p className='font-semibold text-lg'>{file}</p>
-                </button>
-              ))
-            }
-          </div>
-        </div>
-        {currentFile && (
-          <div className="code-editor">
-            <div className="top">
-              <h1 className='text-lg font-semibold' >{currentFile}</h1>
-            </div>
-            <div className="bottom">
-              {
-                fileTree[currentFile]
-              }
-            </div>
-          </div>
-        )}
-      </section>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

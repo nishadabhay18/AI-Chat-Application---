@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from '../config/axios.js'
 import { UserContext } from '../context/user.context.jsx'
 
@@ -86,7 +86,7 @@ const Register = () => {
                 <p className="text-gray-400 mt-4">
                     Already have an account?{' '}
                     <Link
-                        to="/login"
+                        to="/"
                         className="text-blue-500 hover:underline"
                     >
                         Login

@@ -18,6 +18,10 @@ export const receiveMessage = (eventName, cb) => {
     socketInstance.on(eventName, cb)
 }
 
-export const sendMessage = (eventName, cb) => {
-    socketInstance.emit(eventName, cb)
+// export const sendMessage = (eventName, cb) => {
+//     socketInstance.emit(eventName, cb)
+// }
+
+export const sendMessage = (eventName, data) => {
+    socketInstance.emit(eventName, data)
 }
