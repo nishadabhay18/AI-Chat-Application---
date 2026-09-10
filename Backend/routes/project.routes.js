@@ -11,10 +11,7 @@ router.post('/create',
     projectController.createProject
 )
 
-router.get('/all', 
-    authMiddleWare.authUser,
-    projectController.getAllProject
-)
+router.get('/all', authMiddleWare.authUser, projectController.getAllProject)
 
 router.put('/add-user',
     authMiddleWare.authUser,
