@@ -30,7 +30,6 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null)
 
     useEffect(() => {
-
         axios.get('/users/profile')
             .then((res) => {
                 console.log("PROFILE:", res.data)
@@ -39,12 +38,9 @@ export const UserProvider = ({ children }) => {
             .catch((err) => {
                 console.log("PROFILE ERROR:", err.response?.data)
             })
-
     }, [])
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
-            {children}
-        </UserContext.Provider>
+        <UserContext.Provider value={{ user, setUser }}> {children} </UserContext.Provider>
     )
 }
